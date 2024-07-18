@@ -1,41 +1,15 @@
 import tkinter as tk
 from tkinter import filedialog
-from pytube import Playlist
+from pytube import YouTube
 from moviepy.editor import AudioFileClip
-import os
-
-
-def patch_pytube():
-    import re
-    from pytube import extract
-    from pytube.exceptions import RegexMatchError
-
-    def get_throttling_function_name(js):
-        function_patterns = [
-            r"\b[a-zA-Z]+\b\s*=\s*function\s*\((?:[^()]*)\)\s*{",
-            r"\b[a-zA-Z]+\b\s*:\s*function\s*\((?:[^()]*)\)\s*{",
-        ]
-        for pattern in function_patterns:
-            regex = re.compile(pattern)
-            match = regex.search(js)
-            if match:
-                return match.group(1)
-        raise RegexMatchError(
-            caller="get_throttling_function_name", pattern="multiple"
-        )
-
-    extract.get_throttling_function_name = get_throttling_function_name
-
-
-patch_pytube()
 
 
 class YouTubeDownloaderApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("YouTube Playlist Downloader")
+        self.root.title("YouTube Downloader")
 
-        self.url_label = tk.Label(root, text="Masukkan URL playlist YouTube:")
+        self.url_label = tk.Label(root, text="Masukkan URL video YouTube:")
         self.url_label.pack()
 
         self.url_entry = tk.Entry(root, width=50)
@@ -62,21 +36,20 @@ class YouTubeDownloaderApp:
         self.output_path.set(folder_path)
 
     def download_and_convert(self):
-        playlist_url = self.url_entry.get()
+        youtube_url = self.url_entry.get()
         output_folder = self.output_path.get()
 
-        playlist = Playlist(playlist_url)
-        for video in playlist.videos:
-            stream = video.streams.filter(only_audio=True).order_by('abr').desc().first()
-            video_filename = stream.default_filename
-            stream.download(output_folder)
+        yt = YouTube(youtube_url)
+        stream = yt.streams.filter(only_audio=True).order_by('abr').desc().first()
+        video_filename = stream.default_filename
+        stream.download(output_folder)
 
-            video_clip = AudioFileClip(f"{output_folder}/{video_filename}")
-            output_mp3_filename = f"{output_folder}/{os.path.splitext(video_filename)[0]}.mp3"
-            video_clip.write_audiofile(output_mp3_filename, codec='libmp3lame', bitrate='320k')
-            video_clip.close()
+        video_clip = AudioFileClip(f"{output_folder}/{video_filename}")
+        output_mp3_filename = f"{output_folder}/{video_filename.split('.')[0]}.mp3"
+        video_clip.write_audiofile(output_mp3_filename, codec='libmp3lame', bitrate='320k')
+        video_clip.close()
 
-            print(f"Video telah diunduh dan dikonversi ke MP3: {output_mp3_filename}")
+        print(f"Video telah diunduh dan dikonversi ke MP3: {output_mp3_filename}")
 
 
 def main():
