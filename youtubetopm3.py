@@ -4,7 +4,7 @@ from pytube import YouTube
 from moviepy.editor import AudioFileClip
 
 
-class YouTubeDownloaderApp:
+class Youtubetomp3:
     def __init__(self, root):
         self.root = root
         self.root.title("YouTube Downloader")
@@ -54,7 +54,7 @@ class YouTubeDownloaderApp:
 
 def main():
     root = tk.Tk()
-    app = YouTubeDownloaderApp(root)
+    app = Youtubetomp3(root)
     root.mainloop()
 
 
