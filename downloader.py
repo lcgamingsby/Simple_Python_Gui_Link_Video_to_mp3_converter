@@ -38,7 +38,7 @@ def download_mp3():
 root = tk.Tk()
 root.title("YouTube to MP3 Converter")
 
-tk.Label(root, text="Insert the URL of the YouTube video:").pack(pady=10)
+tk.Label(root, text="Insert the URL of the video:").pack(pady=10)
 url_entry = tk.Entry(root, width=50)
 url_entry.pack(pady=5)
 
